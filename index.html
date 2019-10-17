@@ -1,0 +1,147 @@
+<!doctype html>
+<html>
+  <head>
+    <title>
+      The Louis Chatroom
+    </title>
+    <style>
+      body {
+        margin: 0;
+        text-align: center;
+        background-color: #eee;
+        font-family: Arial;
+      }
+          
+      h1 {
+        margin: 0;
+        margin-top: 5;
+        font-size: 2;
+      }
+      
+      h4 {
+        margin: 0;
+      }
+      
+      #topbar > textarea {
+        margin-top: 5px;
+        width: 75%;
+        resize: none;
+        height: 100px;
+      }
+      
+      #popup {
+        position: fixed;
+        bottom: 25%;
+        right: 25%;
+        width: 50%;
+        height: 50%;
+        border: 3px solid;
+        background-color: #eee;
+        visibility: hidden;
+        padding: 0;
+      }
+      
+      #topbar {
+        position: fixed;
+        bottom: 0;
+        width: 100%;;
+        border-top-style: solid;
+        border-bottom-style: solid;
+        padding: 0;
+        background-color: #eee;
+      }
+      
+      #topbar > button {
+        margin: 0;
+        height: 100%;
+        width: 49%;
+      }
+      
+      #postbox {
+        margin: 0;
+        width: 100%;
+        margin-bottom: 200px;
+        overflow: auto;
+        border-top-style: solid;
+        border-bottom-style: solid;
+      }
+      
+      #postbox > div{
+        margin: 0;
+        border-top-style: dashed;
+      }
+      
+      #popupexit {
+        position: absolute;
+        right: 0;
+        top: 0;
+      }
+      
+      #popup > textarea {
+        margin: 5;
+        width: 80%;
+        resize: none;
+        max-width: 100px;
+        max-height: 15px;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>The Louis Chatroom</h1>
+    <h1>
+      <a href="https://phantomderp.github.io">The Louis Site</a>
+    </h1>
+    
+    <div id="topbar">
+      <textarea id="textbox"></textarea>
+      <button onclick="post()">Post</button>
+      <button onclick="login()" id="loginbutton">Login: Anonymous</button>
+    </div>
+    
+    <div id="postbox">
+      Posts
+    </div>
+    
+    <div id="popup">
+      <h1>Login</h1>
+      <button id="popupexit" onclick="exitlogin()">X</button>
+      <h4>Username</h4>
+      <textarea id="logintextbox"></textarea>
+      <!--<h4></h4>
+      <textarea></textarea>-->
+    </div>
+    
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script>
+      //vars
+      var socket = io();
+      var postbox = document.getElementById('postbox');
+      var textbox = document.getElementById('textbox');
+      var username = 'Anonymous'
+      
+      
+      socket.on("update", function(data) {
+        for (var i in data) {
+          postbox.innerHTML += '<div>' + data[i]['user'] + ': ' + data[i]['content'] + '</div>'
+        }
+      });
+      
+      function post() {
+        socket.emit('post', {user: username, content: textbox.value})
+        textbox.value = "";
+      }
+      
+      function login() {
+        document.getElementById('logintextbox').value = username
+        document.getElementById('popup').style.visibility = 'visible';
+      }
+      
+      function exitlogin() {
+        username = document.getElementById('logintextbox').value;
+        document.getElementById('popup').style.visibility = 'hidden';
+        document.getElementById('loginbutton').innerHTML = "Login: " + username;
+      }
+    </script>
+  </body>
+</html>
